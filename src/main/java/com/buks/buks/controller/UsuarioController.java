@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +19,7 @@ import java.util.List;
 public class UsuarioController {
 
     private List<UsuarioDTO> usuarios = new ArrayList<>();
+    private int nextId = 1;
 
     @PostMapping
     @Operation(summary = "Salva um usuário", description = "Salva um usuário")
@@ -28,7 +28,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Os dados do usuário estão incorretos."),
     })
     public ResponseEntity<UsuarioDTO> save(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        usuarioDTO.setId(1);
+        usuarioDTO.setId(nextId++);
         usuarios.add(usuarioDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioDTO);
     }
@@ -43,13 +43,21 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public UsuarioDTO update(@PathVariable("id") Integer id, @RequestBody UsuarioDTO usuarioDTO) {
-        usuarioDTO.setId(id);
-        return usuarioDTO;
+    public ResponseEntity<UsuarioDTO> update(@PathVariable("id") Integer id,
+                                             @Valid @RequestBody UsuarioDTO usuarioDTO) {
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getId().equals(id)) {
+                usuarioDTO.setId(id);
+                usuarios.set(i, usuarioDTO);
+                return ResponseEntity.ok(usuarioDTO);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+        boolean removed = usuarios.removeIf(u -> u.getId().equals(id));
+        return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
-
 }
