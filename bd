@@ -2,11 +2,6 @@
 CREATE DATABASE IF NOT EXISTS buks_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE buks_db;
 
--- Usuário para a aplicação
-CREATE USER IF NOT EXISTS 'buks_user'@'localhost' IDENTIFIED BY 'senha123';
-GRANT ALL PRIVILEGES ON buks_db.* TO 'buks_user'@'localhost';
-FLUSH PRIVILEGES;
-
 -- Tabela de Usuários
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
