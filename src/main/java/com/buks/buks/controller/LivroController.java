@@ -1,8 +1,7 @@
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.LivroDTO;
-import com.buks.buks.model.Livro;
-import com.buks.buks.repository.LivroRepository;
+import com.buks.buks.service.LivroService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,89 +12,49 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/livros")
 @Tag(name = "Livro", description = "APIs de gerenciamento de livros")
 public class LivroController {
 
-    private final LivroRepository livroRepository;
+    private final LivroService livroService;
 
-    public LivroController(LivroRepository livroRepository) {
-        this.livroRepository = livroRepository;
+    public LivroController(LivroService livroService) {
+        this.livroService = livroService;
     }
 
-    // POST /api/livros
     @PostMapping
-    @Operation(summary = "Salva um livro", description = "Cadastra um novo livro")
-    @ApiResponses(value = {
+    @Operation(summary = "Salvar um livro", description = "Cadastra um novo livro")
+    @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Livro salvo com sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Os dados do livro estão incorretos.")
+            @ApiResponse(responseCode = "400", description = "Dados incorretos")
     })
     public ResponseEntity<LivroDTO> save(@Valid @RequestBody LivroDTO livroDTO) {
-        Livro livro = toEntity(livroDTO);
-        Livro saved = livroRepository.save(livro);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toDTO(saved));
+        LivroDTO salvo = livroService.salvar(livroDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
-    // GET /api/livros
     @GetMapping
-    @Operation(summary = "Obter a lista de livros", description = "Retorna todos os livros cadastrados")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Recuperado com sucesso")
-    })
+    @Operation(summary = "Listar todos os livros")
     public List<LivroDTO> findAll() {
-        return livroRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return livroService.listarTodos();
     }
 
-    // PUT /api/livros/{id}
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar um livro", description = "Atualiza os dados de um livro existente")
+    @Operation(summary = "Atualizar um livro")
     public ResponseEntity<LivroDTO> update(@PathVariable Integer id,
                                            @Valid @RequestBody LivroDTO livroDTO) {
-        return livroRepository.findById(id)
-                .map(l -> {
-                    Livro livro = toEntity(livroDTO);
-                    livro.setId(id);
-                    Livro updated = livroRepository.save(livro);
-                    return ResponseEntity.ok(toDTO(updated));
-                })
+        return livroService.atualizar(id, livroDTO)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // DELETE /api/livros/{id}
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar um livro", description = "Remove um livro pelo ID")
+    @Operation(summary = "Deletar um livro")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        if (livroRepository.existsById(id)) {
-            livroRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    // --- conversão DTO ↔ Entidade ---
-    private Livro toEntity(LivroDTO dto) {
-        return new Livro(
-                dto.getId(),
-                dto.getNome(),
-                dto.getDescricao(),
-                dto.getPreco(),
-                dto.getImagem()
-        );
-    }
-
-    private LivroDTO toDTO(Livro livro) {
-        return new LivroDTO(
-                livro.getId(),
-                livro.getNome(),
-                livro.getDescricao(),
-                livro.getPreco(),
-                livro.getImagem()
-        );
+        boolean removido = livroService.deletar(id);
+        return removido ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

@@ -1,7 +1,6 @@
-package com.buks.buks.dto;
+package com.buks.buks.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,14 +9,18 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PedidoDTO {
+@Entity
+@Table(name = "pedidos")
+public class Pedido {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "O ID do usuário é obrigatório.")
+    @Column(name = "usuario_id", nullable = false)
     private Integer usuarioId;
 
-    @NotBlank(message = "O nome do destinatário é obrigatório.")
+    @Column(name = "nome_destinatario", nullable = false, length = 100)
     private String nomeDestinatario;
 
     private String telefone;
@@ -26,6 +29,6 @@ public class PedidoDTO {
 
     private String complemento;
 
-    @NotNull(message = "A data do pedido é obrigatória.")
+    @Column(name = "data_pedido", nullable = false)
     private LocalDate dataPedido;
 }
