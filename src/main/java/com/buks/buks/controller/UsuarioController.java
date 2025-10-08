@@ -1,63 +1,53 @@
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.UsuarioDTO;
+import com.buks.buks.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usuario")
+@RequestMapping("/api/usuarios")
 @Tag(name = "Usuário", description = "APIs de gerenciamento de usuários")
 public class UsuarioController {
 
-    private List<UsuarioDTO> usuarios = new ArrayList<>();
-    private int nextId = 1;
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @PostMapping
-    @Operation(summary = "Salva um usuário", description = "Salva um usuário")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário Salvo com sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Os dados do usuário estão incorretos."),
-    })
+    @Operation(summary = "Cadastra um usuário")
     public ResponseEntity<UsuarioDTO> save(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        usuarioDTO.setId(nextId++);
-        usuarios.add(usuarioDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioDTO);
+        UsuarioDTO saved = usuarioService.save(usuarioDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping
-    @Operation(summary = "Obter a lista de usuários", description = "Retorna a lista de usuários")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Recuperado com sucesso"),
-    })
-    public List<UsuarioDTO> findAll() {
-        return usuarios;
+    @Operation(summary = "Lista todos os usuários")
+    public ResponseEntity<List<UsuarioDTO>> findAll() {
+        return ResponseEntity.ok(usuarioService.findAll());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> update(@PathVariable("id") Integer id,
-                                             @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        for (int i = 0; i < usuarios.size(); i++) {
-            if (usuarios.get(i).getId().equals(id)) {
-                usuarioDTO.setId(id);
-                usuarios.set(i, usuarioDTO);
-                return ResponseEntity.ok(usuarioDTO);
-            }
-        }
-        return ResponseEntity.notFound().build();
+    @Operation(summary = "Atualiza um usuário")
+    public ResponseEntity<UsuarioDTO> update(@PathVariable Integer id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.update(id, usuarioDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
-        boolean removed = usuarios.removeIf(u -> u.getId().equals(id));
-        return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    @Operation(summary = "Deleta um usuário")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        return usuarioService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

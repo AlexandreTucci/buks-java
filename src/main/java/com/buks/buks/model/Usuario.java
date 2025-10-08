@@ -1,26 +1,27 @@
-package com.buks.buks.dto;
+package com.buks.buks.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-public class UsuarioDTO {
+@Entity
+@Table(name = "usuarios")
+public class Usuario {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
     private String nome;
-
-    @Email
     private String email;
-
-    @NotBlank
     private String senha;
-
     private String telefone;
 
-    public UsuarioDTO() {}
+    @Column(name = "criado_em")
+    private LocalDateTime criadoEm = LocalDateTime.now();
 
-    public UsuarioDTO(Integer id, String nome, String email, String senha, String telefone) {
+    public Usuario() {}
+
+    public Usuario(Integer id, String nome, String email, String senha, String telefone) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -43,4 +44,7 @@ public class UsuarioDTO {
 
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public LocalDateTime getCriadoEm() { return criadoEm; }
+    public void setCriadoEm(LocalDateTime criadoEm) { this.criadoEm = criadoEm; }
 }
