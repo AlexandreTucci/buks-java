@@ -30,12 +30,12 @@ public class PedidoService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
-    public Optional<PedidoDTO> buscarPorId(Long id) {
+    public Optional<PedidoDTO> buscarPorId(Integer id) {
         return pedidoRepository.findById(id)
                 .map(this::toDTO);
     }
 
-    public Optional<PedidoDTO> atualizar(Long id, PedidoDTO dto) {
+    public Optional<PedidoDTO> atualizar(Integer id, PedidoDTO dto) {
         return pedidoRepository.findById(id).map(existing -> {
             Pedido pedido = toEntity(dto);
             pedido.setId(id);
@@ -44,7 +44,7 @@ public class PedidoService {
         });
     }
 
-    public boolean deletar(Long id) {
+    public boolean deletar(Integer id) {
         if (pedidoRepository.existsById(id)) {
             pedidoRepository.deleteById(id);
             return true;

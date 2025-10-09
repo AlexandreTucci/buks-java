@@ -48,7 +48,7 @@ public class PedidoController {
             @ApiResponse(responseCode = "200", description = "Pedido encontrado com sucesso!"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
     })
-    public ResponseEntity<PedidoDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<PedidoDTO> findById(@PathVariable Integer id) {
         return pedidoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -57,7 +57,7 @@ public class PedidoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um pedido existente")
-    public ResponseEntity<PedidoDTO> update(@PathVariable Long id, @Valid @RequestBody PedidoDTO dto) {
+    public ResponseEntity<PedidoDTO> update(@PathVariable Integer id, @Valid @RequestBody PedidoDTO dto) {
         return pedidoService.atualizar(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -65,7 +65,7 @@ public class PedidoController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir um pedido pelo ID")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         boolean removido = pedidoService.deletar(id);
         return removido ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();

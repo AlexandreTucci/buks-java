@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PedidoDTO {
 
-    private Long id;
+    private Integer id;
 
     @NotNull(message = "O ID do usuário é obrigatório.")
     private Integer usuarioId;
