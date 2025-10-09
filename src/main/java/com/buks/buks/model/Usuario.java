@@ -3,7 +3,9 @@ package com.buks.buks.model;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -12,16 +14,32 @@ public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String nome;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     private String senha;
+
     private String telefone;
-    private Role role;
+
+    @Enumerated(EnumType.STRING) // 🔥 salva como texto ('USER', 'ADMIN')
+    private Role role = Role.USER;
 
     public Usuario() {}
 
-    // Getters e setters
+    public Usuario(Integer id, String nome, String email, String senha, String telefone, Role role) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.telefone = telefone;
+        this.role = role;
+    }
+
+    // getters e setters
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -40,9 +58,12 @@ public class Usuario implements UserDetails {
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
 
-    // Métodos do UserDetails
+    // Métodos exigidos pelo Spring Security
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return null; }
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> "ROLE_" + role.name());
+    }
 
     @Override
     public String getPassword() { return senha; }
