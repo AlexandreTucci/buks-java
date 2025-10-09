@@ -30,6 +30,10 @@ public class LivroService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+    public Optional<LivroDTO> buscarPorId(Integer id) {
+        return livroRepository.findById(id)
+                .map(this::toDTO);
+    }
 
     public Optional<LivroDTO> atualizar(Integer id, LivroDTO dto) {
         return livroRepository.findById(id).map(existing -> {

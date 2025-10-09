@@ -70,4 +70,5 @@ public class PedidoController {
         return removido ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+
 }

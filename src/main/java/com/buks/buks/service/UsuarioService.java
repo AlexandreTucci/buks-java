@@ -31,6 +31,11 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    public Optional<UsuarioDTO> buscarPorId(Integer id) {
+        return usuarioRepository.findById(id)
+                .map(this::toDTO);
+    }
+
     public Optional<UsuarioDTO> update(Integer id, UsuarioDTO dto) {
         return usuarioRepository.findById(id)
                 .map(existing -> {

@@ -35,6 +35,14 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Busca um usuário por ID")
+    public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer id) {
+        return usuarioService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um usuário")
     public ResponseEntity<UsuarioDTO> update(@PathVariable Integer id, @Valid @RequestBody UsuarioDTO usuarioDTO) {

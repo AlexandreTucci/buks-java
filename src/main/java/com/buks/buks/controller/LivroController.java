@@ -40,6 +40,17 @@ public class LivroController {
     public List<LivroDTO> findAll() {
         return livroService.listarTodos();
     }
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar livro por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Livro encontrado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado.")
+    })
+    public ResponseEntity<LivroDTO> findById(@PathVariable Integer id) {
+        return livroService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um livro")
