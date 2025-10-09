@@ -21,10 +21,22 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // register e login liberados
-                        .anyRequest().authenticated()               // resto precisa de token
+                        // Rotas públicas
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // GET de livros → USER ou ADMIN
+                        .requestMatchers("/api/livros", "/api/livros/*").hasAnyRole("USER", "ADMIN")
+
+                        // Rotas que modificam livros → apenas ADMIN
+                        .requestMatchers("/api/livros/**").hasRole("ADMIN")
+
+                        // Qualquer outra rota precisa de autenticação
+                        .anyRequest().authenticated()
                 )
+                // Sem sessão, JWT é suficiente
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Filtro JWT
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
