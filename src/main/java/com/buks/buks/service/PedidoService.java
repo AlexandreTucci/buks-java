@@ -30,6 +30,10 @@ public class PedidoService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+    public Optional<PedidoDTO> buscarPorId(Long id) {
+        return pedidoRepository.findById(id)
+                .map(this::toDTO);
+    }
 
     public Optional<PedidoDTO> atualizar(Long id, PedidoDTO dto) {
         return pedidoRepository.findById(id).map(existing -> {

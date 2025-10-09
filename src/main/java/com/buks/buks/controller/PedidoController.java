@@ -41,6 +41,20 @@ public class PedidoController {
         return pedidoService.listarTodos();
     }
 
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar pedido por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pedido encontrado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
+    })
+    public ResponseEntity<PedidoDTO> findById(@PathVariable Long id) {
+        return pedidoService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um pedido existente")
     public ResponseEntity<PedidoDTO> update(@PathVariable Long id, @Valid @RequestBody PedidoDTO dto) {
