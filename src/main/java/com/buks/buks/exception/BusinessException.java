@@ -1,18 +1,14 @@
 package com.buks.buks.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@AllArgsConstructor
-public class BusinessException extends Exception {
+@Getter
+public class BusinessException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    private final ErrorCode errorCode;
 
-    private String codeDescription;
-    private String message;
-
-
+    public BusinessException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
 }

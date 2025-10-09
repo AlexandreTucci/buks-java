@@ -13,16 +13,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
-
         ErrorResponse error = new ErrorResponse(
                 400,
-                ex.getCodeDescription(),
-                ex.getMessage(),
-                ex.getCause() != null ? ex.getCause().getMessage() : "",
+                ex.getErrorCode().getCode(),
+                ex.getErrorCode().getMessage(),
+                "",
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidExceptions(MethodArgumentNotValidException ex) {
