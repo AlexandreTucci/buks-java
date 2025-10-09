@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -34,7 +36,13 @@ public class AuthController {
         Optional<Usuario> userOpt = usuarioRepository.findByEmail(usuario.getEmail());
         if (userOpt.isPresent() && encoder.matches(usuario.getSenha(), userOpt.get().getSenha())) {
             String token = jwtService.generateToken(userOpt.get());
-            return ResponseEntity.ok(token);
+
+            // Crie um Map para encapsular o token
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+
+            // Retorne o Map, que será convertido para JSON
+            return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
