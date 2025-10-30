@@ -2,6 +2,7 @@ package com.buks.buks.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 public class UsuarioDTO {
 
@@ -16,16 +17,17 @@ public class UsuarioDTO {
     @NotBlank
     private String senha;
 
-    private String telefone;
+    @NotBlank
+    private LocalDate dataNascimento;
 
     public UsuarioDTO() {}
 
-    public UsuarioDTO(Integer id, String nome, String email, String senha, String telefone) {
+    public UsuarioDTO(Integer id, String nome, String email, String senha, LocalDate dataNascimento) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.telefone = telefone;
+        this.dataNascimento = dataNascimento;
     }
 
     // Getters e setters
@@ -41,6 +43,6 @@ public class UsuarioDTO {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public LocalDate getDataNascimento() { return dataNascimento; }
+    public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 }

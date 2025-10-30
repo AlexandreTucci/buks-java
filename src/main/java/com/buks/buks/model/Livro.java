@@ -27,4 +27,7 @@ public class Livro {
 
     @Column(nullable = false)
     private String imagem;
+
+    @Column(nullable = false)
+    private Integer Estoque;
 }

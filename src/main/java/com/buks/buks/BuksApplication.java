@@ -9,5 +9,4 @@ public class BuksApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BuksApplication.class, args);
 	}
-
 }
