@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SecurityConfig {
@@ -19,7 +21,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // 🔹 Habilita CORS e desativa CSRF
+                .cors(cors -> {})  // habilita suporte ao CORS
                 .csrf(csrf -> csrf.disable())
+
+                // 🔹 Configura as permissões das rotas
                 .authorizeHttpRequests(auth -> auth
                         // Rotas públicas
                         .requestMatchers("/api/auth/**").permitAll()
@@ -27,18 +33,38 @@ public class SecurityConfig {
                         // GET de livros → USER ou ADMIN
                         .requestMatchers("/api/livros", "/api/livros/*").hasAnyRole("USER", "ADMIN")
 
-                        // Rotas que modificam livros → apenas ADMIN
+                        // Modificações em livros → apenas ADMIN
                         .requestMatchers("/api/livros/**").hasRole("ADMIN")
 
                         // Qualquer outra rota precisa de autenticação
                         .anyRequest().authenticated()
                 )
-                // Sem sessão, JWT é suficiente
+
+                // 🔹 Define política de sessão (sem estado)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Filtro JWT
+                // 🔹 Adiciona o filtro JWT antes do de autenticação padrão
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // 🔹 Configuração global de CORS
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        // frontend React
+                        .allowedOrigins("http://localhost:3000")
+                        // métodos aceitos
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        // permite headers personalizados (como Authorization)
+                        .allowedHeaders("*")
+                        // permite cookies e cabeçalhos de autenticação
+                        .allowCredentials(true);
+            }
+        };
     }
 }

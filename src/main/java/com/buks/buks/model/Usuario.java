@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,19 +23,19 @@ public class Usuario implements UserDetails {
 
     private String senha;
 
-    private String telefone;
+    private LocalDate dataNascimento;
 
-    @Enumerated(EnumType.STRING) // 🔥 salva como texto ('USER', 'ADMIN')
+    @Enumerated(EnumType.STRING) // salva como texto ('USER', 'ADMIN')
     private Role role = Role.USER;
 
     public Usuario() {}
 
-    public Usuario(Integer id, String nome, String email, String senha, String telefone, Role role) {
+    public Usuario(Integer id, String nome, String email, String senha, LocalDate dataNascimento, Role role) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.telefone = telefone;
+        this.dataNascimento = dataNascimento;
         this.role = role;
     }
 
@@ -52,8 +53,8 @@ public class Usuario implements UserDetails {
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public LocalDate getDataNascimento() { return dataNascimento; }
+    public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }

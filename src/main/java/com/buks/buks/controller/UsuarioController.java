@@ -22,13 +22,6 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping
-    @Operation(summary = "Cadastra um usuário")
-    public ResponseEntity<UsuarioDTO> save(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        UsuarioDTO saved = usuarioService.save(usuarioDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
-
     @GetMapping
     @Operation(summary = "Lista todos os usuários")
     public ResponseEntity<List<UsuarioDTO>> findAll() {

@@ -26,4 +26,6 @@ public class LivroDTO {
 
     @NotBlank(message = "A URL da imagem precisa ser preenchida.")
     private String imagem;
+
+    private Integer estoque;
 }

@@ -60,12 +60,18 @@
             usuario.setNome(dto.getNome());
             usuario.setEmail(dto.getEmail());
             usuario.setSenha(dto.getSenha());
-            usuario.setTelefone(dto.getTelefone());
+            usuario.setDataNascimento(dto.getDataNascimento());
             return usuario;
         }
 
 
         private UsuarioDTO toDTO(Usuario usuario) {
-            return new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getSenha(), usuario.getTelefone());
+            return new UsuarioDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getSenha(),
+                usuario.getDataNascimento()
+            );
         }
     }
