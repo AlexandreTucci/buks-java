@@ -1,41 +1,178 @@
-drop database if exists buks_db ;
--- Cria o banco de dados
-CREATE DATABASE IF NOT EXISTS buks_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+DROP DATABASE IF EXISTS buks_db;
+
+-- Cria o banco de dados com charset e collate adequados para português
+CREATE DATABASE buks_db CHARACTER
+SET
+    utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Seleciona o banco de dados para uso
 USE buks_db;
 
--- Tabela de Usuários
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(120) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    telefone VARCHAR(20),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	role VARCHAr(20) NOT NULL DEFAULT 'USER'
+-- 
+-- 1. Tabela de Usuários (Entidade Principal)
+-- Armazena os dados dos clientes e administradores
+--
+CREATE TABLE
+    usuarios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        email VARCHAR(120) NOT NULL UNIQUE,
+        senha VARCHAR(255) NOT NULL,
+        telefone VARCHAR(20),
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        role VARCHAR(20) NOT NULL DEFAULT 'USER' -- 'USER' ou 'ADMIN'
+    );
 
-);
+-- 
+-- 2. Tabela de Editoras (Entidade Principal)
+-- Relacionamento: (1) Editora pode ter (N) Livros
+--
+CREATE TABLE
+    editoras (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL UNIQUE
+    );
 
--- Tabela de Livros
-CREATE TABLE livros (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    descricao TEXT NOT NULL,
-    preco DECIMAL(10,2) NOT NULL,
-    imagem VARCHAR(255),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- 
+-- 3. Tabela de Autores (Entidade Principal)
+-- Relacionamento: (N) Autores podem escrever (N) Livros (via tabela 'livro_autor')
+--
+CREATE TABLE
+    autores (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(150) NOT NULL
+    );
 
--- Tabela de Pedidos
-CREATE TABLE pedidos (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    nome_destinatario VARCHAR(100) NOT NULL,
-    telefone VARCHAR(20),
-    cep VARCHAR(10),
-    complemento VARCHAR(255),
-    data_pedido DATE NOT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
+-- 
+-- 4. Tabela de Categorias (Entidade Principal)
+-- Relacionamento: (N) Categorias podem conter (N) Livros (via tabela 'livro_categoria')
+--
+CREATE TABLE
+    categorias (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL UNIQUE
+    );
 
-insert into usuarios (nome, email, telefone, senha, role) values ('joao', 'joao@emailrole', '999999999', '123456', 'USER');
+-- 
+-- 5. Tabela de Livros (Entidade Central)
+-- Esta tabela se conecta com muitas outras.
+--
+CREATE TABLE
+    livros (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        editora_id INT, -- Chave estrangeira para Editoras (1:N)
+        nome VARCHAR(150) NOT NULL,
+        descricao TEXT NOT NULL,
+        preco DECIMAL(10, 2) NOT NULL,
+        ano_publicacao INT,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- Relacionamento 1:N com Editoras
+        -- Se uma editora for deletada, o campo no livro fica nulo.
+        FOREIGN KEY (editora_id) REFERENCES editoras (id) ON DELETE SET NULL
+    );
+
+-- 
+-- 6. Tabela de Pedidos (Entidade Principal)
+-- Relacionamento: (1) Usuário pode ter (N) Pedidos
+--
+CREATE TABLE
+    pedidos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        nome_destinatario VARCHAR(100) NOT NULL,
+        telefone VARCHAR(20),
+        cep VARCHAR(10),
+        numero VARCHAR(20),
+        complemento VARCHAR(255),
+        data_pedido DATE NOT NULL,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- Relacionamento 1:N com Usuários
+        -- Se um usuário for deletado, seus pedidos também são.
+        FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
+    );
+
+-- 
+-- 7. Tabela de Pagamentos (Relacionamento 1:1 com Pedidos)
+-- Armazena os dados de pagamento de UM pedido.
+--
+CREATE TABLE
+    pagamentos (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        pedido_id BIGINT NOT NULL UNIQUE, -- UNIQUE garante o relacionamento 1:1
+        metodo VARCHAR(50) NOT NULL, -- Ex: 'Cartão de Crédito', 'Boleto', 'PIX'
+        valor_total DECIMAL(10, 2) NOT NULL,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- Se o pedido for deletado, o pagamento também é.
+        FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE
+    );
+
+-- 
+-- 8. Tabela de Avaliações (Entidade Fraca / Tabela Associativa)
+-- Relacionamentos:
+-- (1) Usuário pode fazer (N) Avaliações
+-- (1) Livro pode ter (N) Avaliações
+--
+CREATE TABLE
+    avaliacoes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        livro_id INT NOT NULL,
+        nota INT NOT NULL, -- Ex: 1 a 5
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        -- Se o usuário for deletado, suas avaliações são deletadas.
+        FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE,
+        -- Se o livro for deletado, suas avaliações são deletadas.
+        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE CASCADE,
+        -- Um usuário só pode avaliar um livro uma única vez.
+        UNIQUE KEY uk_usuario_livro (usuario_id, livro_id)
+    );
+
+--
+-- TABELAS PIVÔ (JUNCTION TABLES) PARA RELACIONAMENTOS N:M
+--
+-- 
+-- 9. Tabela 'pedido_itens' (N:M entre Pedidos e Livros)
+-- ESSENCIAL: Diz quais livros estão em qual pedido.
+-- (1) Pedido tem (N) Itens
+-- (1) Livro pode estar em (N) Itens de pedido
+--
+CREATE TABLE
+    pedido_livros (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        pedido_id INT NOT NULL,
+        livro_id INT NOT NULL,
+        quantidade INT NOT NULL,
+        preco_unitario DECIMAL(10, 2) NOT NULL, -- Preço no momento da compra
+        FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE,
+        -- Impede que um livro seja deletado se estiver em um pedido (RESTRICT)
+        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE RESTRICT
+    );
+
+-- 
+-- 10. Tabela 'livro_autor' (N:M entre Livros e Autores)
+-- Um livro pode ter vários autores. Um autor pode ter vários livros.
+--
+CREATE TABLE
+    livro_autor (
+        livro_id INT NOT NULL,
+        autor_id INT NOT NULL,
+        -- Chave primária composta para garantir que a dupla não se repita
+        PRIMARY KEY (livro_id, autor_id),
+        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE CASCADE,
+        FOREIGN KEY (autor_id) REFERENCES autores (id) ON DELETE CASCADE
+    );
+
+-- 
+-- 11. Tabela 'livro_categoria' (N:M entre Livros e Categorias)
+-- Um livro pode ter várias categorias. Uma categoria pode ter vários livros.
+--
+CREATE TABLE
+    livro_categoria (
+        livro_id INT NOT NULL,
+        categoria_id INT NOT NULL,
+        -- Chave primária composta
+        PRIMARY KEY (livro_id, categoria_id),
+        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE CASCADE,
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE CASCADE
+    );
+
