@@ -18,12 +18,12 @@ CREATE TABLE
         nome VARCHAR(100) NOT NULL,
         email VARCHAR(120) NOT NULL UNIQUE,
         senha VARCHAR(255) NOT NULL,
-        telefone VARCHAR(20),
+        data_nascimento DATE NOT NULL,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         role VARCHAR(20) NOT NULL DEFAULT 'USER' -- 'USER' ou 'ADMIN'
     );
 
--- 
+--
 -- 2. Tabela de Editoras (Entidade Principal)
 -- Relacionamento: (1) Editora pode ter (N) Livros
 --
@@ -33,7 +33,7 @@ CREATE TABLE
         nome VARCHAR(100) NOT NULL UNIQUE
     );
 
--- 
+--
 -- 3. Tabela de Autores (Entidade Principal)
 -- Relacionamento: (N) Autores podem escrever (N) Livros (via tabela 'livro_autor')
 --
@@ -43,7 +43,7 @@ CREATE TABLE
         nome VARCHAR(150) NOT NULL
     );
 
--- 
+--
 -- 4. Tabela de Categorias (Entidade Principal)
 -- Relacionamento: (N) Categorias podem conter (N) Livros (via tabela 'livro_categoria')
 --
@@ -53,7 +53,7 @@ CREATE TABLE
         nome VARCHAR(100) NOT NULL UNIQUE
     );
 
--- 
+--
 -- 5. Tabela de Livros (Entidade Central)
 -- Esta tabela se conecta com muitas outras.
 --
@@ -65,13 +65,14 @@ CREATE TABLE
         descricao TEXT NOT NULL,
         preco DECIMAL(10, 2) NOT NULL,
         ano_publicacao INT,
+        estoque INT DEFAULT 0,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         -- Relacionamento 1:N com Editoras
         -- Se uma editora for deletada, o campo no livro fica nulo.
         FOREIGN KEY (editora_id) REFERENCES editoras (id) ON DELETE SET NULL
     );
 
--- 
+--
 -- 6. Tabela de Pedidos (Entidade Principal)
 -- Relacionamento: (1) Usuário pode ter (N) Pedidos
 --
@@ -82,7 +83,6 @@ CREATE TABLE
         nome_destinatario VARCHAR(100) NOT NULL,
         telefone VARCHAR(20),
         cep VARCHAR(10),
-        numero VARCHAR(20),
         complemento VARCHAR(255),
         data_pedido DATE NOT NULL,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
