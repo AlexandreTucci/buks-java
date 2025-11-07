@@ -97,8 +97,8 @@ CREATE TABLE
 --
 CREATE TABLE
     pagamentos (
-        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-        pedido_id BIGINT NOT NULL UNIQUE, -- UNIQUE garante o relacionamento 1:1
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        pedido_id INT NOT NULL UNIQUE, -- UNIQUE garante o relacionamento 1:1
         metodo VARCHAR(50) NOT NULL, -- Ex: 'Cartão de Crédito', 'Boleto', 'PIX'
         valor_total DECIMAL(10, 2) NOT NULL,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
