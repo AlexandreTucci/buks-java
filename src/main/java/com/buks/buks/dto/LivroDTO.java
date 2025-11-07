@@ -24,8 +24,5 @@ public class LivroDTO {
     @Positive(message = "O preço deve ser maior que zero.")
     private Double preco;
 
-    @NotBlank(message = "A URL da imagem precisa ser preenchida.")
-    private String imagem;
-
     private Integer estoque;
 }

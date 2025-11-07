@@ -9,22 +9,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "livros")
-public class Livro {
+@Table(name = "avaliacoes")
+public class Avaliacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String nome;
+    @Column(name = "usuario_id", nullable = false)
+    private Integer usuarioId;
+
+    @Column(name = "livro_id", nullable = false)
+    private Integer livroId;
 
     @Column(nullable = false)
-    private String descricao;
-
-    @Column(nullable = false)
-    private Double preco;
-
-    @Column(nullable = false)
-    private Integer Estoque;
+    private Integer nota;
 }

@@ -59,7 +59,6 @@ public class LivroService {
                 dto.getNome(),
                 dto.getDescricao(),
                 dto.getPreco(),
-                dto.getImagem(),
                 dto.getEstoque()
         );
     }
@@ -70,7 +69,6 @@ public class LivroService {
                 livro.getNome(),
                 livro.getDescricao(),
                 livro.getPreco(),
-                livro.getImagem(),
                 livro.getEstoque()
         );
     }

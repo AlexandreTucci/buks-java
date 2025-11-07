@@ -36,6 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("🔍 JwtAuthFilter executando para rota: " + request.getRequestURI());
 
         String authHeader = request.getHeader("Authorization");
 
@@ -56,7 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 if (userOpt.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
                     Usuario user = userOpt.get();
 
-                    // Adiciona ROLE_ para Spring Security reconhecer
+                    // Adiciona "ROLE_" para o Spring Security reconhecer o papel corretamente
                     SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
 
                     UsernamePasswordAuthenticationToken authToken =
@@ -67,12 +68,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             );
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
 
             } catch (Exception e) {
-                System.out.println("Token inválido: " + e.getMessage());
+                System.out.println("⚠️ Token inválido: " + e.getMessage());
             }
         }
 
