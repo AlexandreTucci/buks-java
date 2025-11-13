@@ -2,7 +2,6 @@ package com.buks.buks.service;
 
 import com.buks.buks.dto.PedidoDTO;
 import com.buks.buks.model.Pedido;
-import com.buks.buks.repository.LivroRepository; // Importante mockar isso
 import com.buks.buks.repository.PedidoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
-import java.util.ArrayList; // Import ArrayList
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -19,24 +17,12 @@ import static org.mockito.Mockito.when;
 class PedidoServiceTest {
 
     @Mock private PedidoRepository pedidoRepository;
-    @Mock private LivroRepository livroRepository; // O service usa o LivroRepo também
     @InjectMocks private PedidoService pedidoService;
 
     @Test
     void deveSalvarPedido() {
-        // Ajustando o construtor para incluir a lista de itens (vazia neste teste simples)
-        PedidoDTO dto = new PedidoDTO(
-                null,
-                1,
-                "Destinatario",
-                "123",
-                "00000",
-                "Casa",
-                LocalDate.now(),
-                new ArrayList<>() // <--- Correção aqui (Lista vazia)
-        );
-
-        Pedido pedido = new Pedido(1, 1, "Destinatario", "123", "00000", "Casa", LocalDate.now(), new ArrayList<>());
+        PedidoDTO dto = new PedidoDTO(null, 1, "Destinatario", "123", "00000", "Casa", LocalDate.now());
+        Pedido pedido = new Pedido(1, 1, "Destinatario", "123", "00000", "Casa", LocalDate.now());
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 

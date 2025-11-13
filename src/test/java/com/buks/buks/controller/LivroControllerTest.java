@@ -8,28 +8,35 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LivroController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class LivroControllerTest {
 
     @Autowired private MockMvc mockMvc;
+
     @MockitoBean private LivroService livroService;
+
+    // GARANTA QUE ESTA LINHA EXISTE:
     @MockitoBean private UsuarioRepository usuarioRepository;
+
     @Autowired private ObjectMapper objectMapper;
 
     @Test
     void deveCriarLivro() throws Exception {
-        LivroDTO dto = new LivroDTO(null, "Java", "Desc", 50.0, 10);
-        LivroDTO salvo = new LivroDTO(1, "Java", "Desc", 50.0, 10);
+        // Certifique-se que a ordem dos argumentos bate com o seu DTO atual
+        // id, nome, descricao, preco, estoque
+        LivroDTO dto = new LivroDTO(null, "Java Completo", "Livro de Java", 50.0, 10);
+        LivroDTO salvo = new LivroDTO(1, "Java Completo", "Livro de Java", 50.0, 10);
 
         when(livroService.salvar(any())).thenReturn(salvo);
 
