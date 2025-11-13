@@ -1,11 +1,12 @@
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.UsuarioDTO;
+import com.buks.buks.exception.BusinessException;
+import com.buks.buks.exception.ErrorCode;
 import com.buks.buks.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,13 @@ public class UsuarioController {
     @GetMapping
     @Operation(summary = "Lista todos os usuários")
     public ResponseEntity<List<UsuarioDTO>> findAll() {
-        return ResponseEntity.ok(usuarioService.findAll());
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+
+        if (usuarios.isEmpty()) {
+            throw new BusinessException(ErrorCode.NO_USERS_FOUND);
+        }
+
+        return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping("/{id}")
@@ -33,22 +40,33 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer id) {
         return usuarioService.buscarPorId(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualiza um usuário")
-    public ResponseEntity<UsuarioDTO> update(@PathVariable Integer id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+    @Operation(summary = "Atualiza um usuário existente")
+    public ResponseEntity<UsuarioDTO> update(
+            @PathVariable Integer id,
+            @Valid @RequestBody UsuarioDTO usuarioDTO) {
+
+        if (usuarioDTO == null) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST);
+        }
+
         return usuarioService.update(id, usuarioDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deleta um usuário")
+    @Operation(summary = "Remove um usuário existente")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        return usuarioService.delete(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        boolean removed = usuarioService.delete(id);
+
+        if (!removed) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

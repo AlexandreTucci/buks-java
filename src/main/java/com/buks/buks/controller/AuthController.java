@@ -1,5 +1,7 @@
 package com.buks.buks.controller;
 
+import com.buks.buks.exception.BusinessException;
+import com.buks.buks.exception.ErrorCode;
 import com.buks.buks.model.Usuario;
 import com.buks.buks.repository.UsuarioRepository;
 import com.buks.buks.service.JwtService;
@@ -22,28 +24,45 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Usuario usuario) {
+        // Verifica se o e-mail já existe
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        // Criptografa a senha antes de salvar
         usuario.setSenha(encoder.encode(usuario.getSenha()));
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok("Usuário registrado com sucesso!");
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Usuário registrado com sucesso!");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
         Optional<Usuario> userOpt = usuarioRepository.findByEmail(usuario.getEmail());
-        if (userOpt.isPresent() && encoder.matches(usuario.getSenha(), userOpt.get().getSenha())) {
-            String token = jwtService.generateToken(userOpt.get());
 
-            // Crie um Map para encapsular o token
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-
-            // Retorne o Map, que será convertido para JSON
-            return ResponseEntity.ok(response);
+        // Caso o usuário não exista
+        if (userOpt.isEmpty()) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
-        return ResponseEntity.status(401).body("Credenciais inválidas");
+
+        Usuario user = userOpt.get();
+
+        // Caso a senha esteja incorreta
+        if (!encoder.matches(usuario.getSenha(), user.getSenha())) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        // Gera o token JWT
+        String token = jwtService.generateToken(user);
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+
+        return ResponseEntity.ok(response);
     }
 }

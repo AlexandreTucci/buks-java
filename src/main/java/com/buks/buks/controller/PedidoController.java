@@ -1,6 +1,8 @@
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.PedidoDTO;
+import com.buks.buks.exception.BusinessException;
+import com.buks.buks.exception.ErrorCode;
 import com.buks.buks.service.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,25 +27,28 @@ public class PedidoController {
     }
 
     @PostMapping
-    @Operation(summary = "Salvar um pedido")
+    @Operation(summary = "Salvar um pedido", description = "Cadastra um novo pedido no sistema")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Pedido criado com sucesso!"),
             @ApiResponse(responseCode = "400", description = "Dados incorretos.")
     })
     public ResponseEntity<PedidoDTO> save(@Valid @RequestBody PedidoDTO dto) {
-        PedidoDTO salvo = pedidoService.salvar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        try {
+            PedidoDTO salvo = pedidoService.salvar(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
+        }
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos os pedidos")
+    @Operation(summary = "Listar todos os pedidos", description = "Retorna uma lista de todos os pedidos cadastrados")
     public List<PedidoDTO> findAll() {
         return pedidoService.listarTodos();
     }
 
-
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar pedido por ID")
+    @Operation(summary = "Buscar pedido por ID", description = "Retorna um pedido específico com base no ID informado")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pedido encontrado com sucesso!"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
@@ -51,24 +56,33 @@ public class PedidoController {
     public ResponseEntity<PedidoDTO> findById(@PathVariable Integer id) {
         return pedidoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
-
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar um pedido existente")
+    @Operation(summary = "Atualizar um pedido existente", description = "Atualiza as informações de um pedido pelo ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pedido atualizado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado."),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização.")
+    })
     public ResponseEntity<PedidoDTO> update(@PathVariable Integer id, @Valid @RequestBody PedidoDTO dto) {
         return pedidoService.atualizar(id, dto)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Excluir um pedido pelo ID")
+    @Operation(summary = "Excluir um pedido pelo ID", description = "Remove um pedido existente pelo ID informado")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Pedido excluído com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
+    })
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         boolean removido = pedidoService.deletar(id);
-        return removido ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        if (!removido) {
+            throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
+        }
+        return ResponseEntity.noContent().build();
     }
-
 }

@@ -1,6 +1,8 @@
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.LivroDTO;
+import com.buks.buks.exception.BusinessException;
+import com.buks.buks.exception.ErrorCode;
 import com.buks.buks.service.LivroService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,17 +33,22 @@ public class LivroController {
             @ApiResponse(responseCode = "400", description = "Dados incorretos")
     })
     public ResponseEntity<LivroDTO> save(@Valid @RequestBody LivroDTO livroDTO) {
-        LivroDTO salvo = livroService.salvar(livroDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        try {
+            LivroDTO salvo = livroService.salvar(livroDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_BOOK_DATA);
+        }
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos os livros")
+    @Operation(summary = "Listar todos os livros", description = "Retorna a lista de todos os livros cadastrados")
     public List<LivroDTO> findAll() {
         return livroService.listarTodos();
     }
+
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar livro por ID")
+    @Operation(summary = "Buscar livro por ID", description = "Retorna os dados de um livro específico")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Livro encontrado com sucesso!"),
             @ApiResponse(responseCode = "404", description = "Livro não encontrado.")
@@ -49,23 +56,34 @@ public class LivroController {
     public ResponseEntity<LivroDTO> findById(@PathVariable Integer id) {
         return livroService.buscarPorId(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOK_NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar um livro")
+    @Operation(summary = "Atualizar um livro", description = "Atualiza os dados de um livro existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Livro atualizado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado."),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos para atualização.")
+    })
     public ResponseEntity<LivroDTO> update(@PathVariable Integer id,
                                            @Valid @RequestBody LivroDTO livroDTO) {
         return livroService.atualizar(id, livroDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOK_NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar um livro")
+    @Operation(summary = "Deletar um livro", description = "Remove um livro do sistema pelo ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Livro deletado com sucesso!"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado.")
+    })
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         boolean removido = livroService.deletar(id);
-        return removido ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        if (!removido) {
+            throw new BusinessException(ErrorCode.BOOK_NOT_FOUND);
+        }
+        return ResponseEntity.noContent().build();
     }
 }

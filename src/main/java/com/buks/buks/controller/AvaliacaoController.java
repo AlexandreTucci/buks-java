@@ -1,6 +1,8 @@
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.AvaliacaoDTO;
+import com.buks.buks.exception.BusinessException;
+import com.buks.buks.exception.ErrorCode;
 import com.buks.buks.service.AvaliacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,17 +30,30 @@ public class AvaliacaoController {
     @Operation(summary = "Salvar uma avaliação", description = "Cadastra uma nova avaliação de um livro")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Avaliação salva com sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Dados incorretos")
+            @ApiResponse(responseCode = "400", description = "Dados incorretos"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado.")
     })
     public ResponseEntity<AvaliacaoDTO> save(@Valid @RequestBody AvaliacaoDTO avaliacaoDTO) {
-        AvaliacaoDTO salvo = avaliacaoService.salvar(avaliacaoDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        try {
+            AvaliacaoDTO salvo = avaliacaoService.salvar(avaliacaoDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (BusinessException e) {
+            throw e; // já será tratado pelo GlobalExceptionHandler
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR);
+        }
     }
 
     @GetMapping
     @Operation(summary = "Listar todas as avaliações")
-    public List<AvaliacaoDTO> findAll() {
-        return avaliacaoService.listarTodas();
+    public ResponseEntity<List<AvaliacaoDTO>> findAll() {
+        List<AvaliacaoDTO> avaliacoes = avaliacaoService.listarTodas();
+
+        if (avaliacoes.isEmpty()) {
+            throw new BusinessException(ErrorCode.NO_REVIEWS_FOUND);
+        }
+
+        return ResponseEntity.ok(avaliacoes);
     }
 
     @GetMapping("/{id}")
@@ -50,7 +65,7 @@ public class AvaliacaoController {
     public ResponseEntity<AvaliacaoDTO> findById(@PathVariable Integer id) {
         return avaliacaoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
     @PutMapping("/{id}")
@@ -59,14 +74,18 @@ public class AvaliacaoController {
                                                @Valid @RequestBody AvaliacaoDTO avaliacaoDTO) {
         return avaliacaoService.atualizar(id, avaliacaoDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deletar uma avaliação")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         boolean removido = avaliacaoService.deletar(id);
-        return removido ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+
+        if (!removido) {
+            throw new BusinessException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }
