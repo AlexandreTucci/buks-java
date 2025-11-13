@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,4 +28,12 @@ public class Livro {
 
     @Column(nullable = false)
     private Integer Estoque;
+
+    @ManyToMany
+    @JoinTable(
+            name = "livros_autores",
+            joinColumns = @JoinColumn(name = "livro_id"),
+            inverseJoinColumns = @JoinColumn(name = "autor_id")
+    )
+    private List<Autor> autores;
 }

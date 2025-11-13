@@ -32,8 +32,9 @@ public enum ErrorCode {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Ocorreu um erro inesperado."),
 
     // === Autor e Editora ===
-    AUTHOR_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTHOR_NOT_FOUND", "Autor não encontrado."),
     EDITORA_NOT_FOUND(HttpStatus.NOT_FOUND, "EDITORA_NOT_FOUND", "Editora não encontrada."),
+    AUTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTOR_NOT_FOUND", "Autor não encontrado."),
+
 
 
     // === Categoria ===

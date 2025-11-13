@@ -8,7 +8,6 @@ import com.buks.buks.repository.AutorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,31 +34,35 @@ public class AutorService {
 
     public AutorDTO buscarPorId(Long id) {
         Autor autor = autorRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.AUTHOR_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.AUTOR_NOT_FOUND));
         return toDTO(autor);
     }
 
     public AutorDTO atualizar(Long id, AutorDTO dto) {
-        Autor autorExistente = autorRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.AUTHOR_NOT_FOUND));
+        Autor existente = autorRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.AUTOR_NOT_FOUND));
 
-        autorExistente.setNome(dto.getNome());
-        autorExistente.setNacionalidade(dto.getNacionalidade());
+        existente.setNome(dto.getNome());
+        existente.setNacionalidade(dto.getNacionalidade());
 
-        Autor atualizado = autorRepository.save(autorExistente);
+        Autor atualizado = autorRepository.save(existente);
         return toDTO(atualizado);
     }
 
     public void deletar(Long id) {
         if (!autorRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.AUTHOR_NOT_FOUND);
+            throw new BusinessException(ErrorCode.AUTOR_NOT_FOUND);
         }
         autorRepository.deleteById(id);
     }
 
-    // Conversões
+    // Conversões DTO ↔ Entidade
     private Autor toEntity(AutorDTO dto) {
-        return new Autor(dto.getId(), dto.getNome(), dto.getNacionalidade());
+        Autor autor = new Autor();
+        autor.setId(dto.getId());
+        autor.setNome(dto.getNome());
+        autor.setNacionalidade(dto.getNacionalidade());
+        return autor;
     }
 
     private AutorDTO toDTO(Autor autor) {
