@@ -16,6 +16,11 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
+                .info(new Info()
+                        .title("Buks API")
+                        .version("1.0")
+                        .description("API de gerenciamento Buks")
+                        .license(new License().name("Apache 2.0")))
                 .addSecurityItem(new SecurityRequirement()
                         .addList(securitySchemeName))
                 .components(new Components()
