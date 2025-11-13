@@ -29,7 +29,7 @@ class CategoriaControllerTest {
 
     @Test
     void deveListarCategorias() throws Exception {
-        when(categoriaService.listarTodas()).thenReturn(List.of(new CategoriaDTO(1L, "Terror", "Desc")));
+        when(categoriaService.listarTodas()).thenReturn(List.of(new CategoriaDTO(1, "Terror", "Desc")));
 
         mockMvc.perform(get("/api/categorias"))
                 .andExpect(status().isOk());

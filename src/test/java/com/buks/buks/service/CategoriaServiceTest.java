@@ -21,7 +21,7 @@ class CategoriaServiceTest {
     @Test
     void deveCriarCategoria() {
         CategoriaDTO dto = new CategoriaDTO(null, "Terror", "Livros de terror");
-        Categoria categoria = new Categoria(1L, "Terror", "Livros de terror");
+        Categoria categoria = new Categoria(1, "Terror", "Livros de terror");
 
         when(categoriaRepository.existsByNome("Terror")).thenReturn(false);
         when(categoriaRepository.save(any(Categoria.class))).thenReturn(categoria);

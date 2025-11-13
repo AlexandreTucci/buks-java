@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,6 +27,7 @@ class UsuarioServiceTest {
     @Test
     void deveSalvarUsuario() {
         UsuarioDTO dto = new UsuarioDTO(null, "Teste", "teste@email.com", "123", LocalDate.now());
+        // Construtor do Usuario: id, nome, email, senha, dataNascimento, role
         Usuario usuario = new Usuario(1, "Teste", "teste@email.com", "123", LocalDate.now(), null);
 
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);

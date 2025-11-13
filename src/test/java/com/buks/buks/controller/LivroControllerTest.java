@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashSet; // Importante
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,20 +25,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LivroControllerTest {
 
     @Autowired private MockMvc mockMvc;
-
     @MockitoBean private LivroService livroService;
-
-    // GARANTA QUE ESTA LINHA EXISTE:
     @MockitoBean private UsuarioRepository usuarioRepository;
-
     @Autowired private ObjectMapper objectMapper;
 
     @Test
     void deveCriarLivro() throws Exception {
-        // Certifique-se que a ordem dos argumentos bate com o seu DTO atual
-        // id, nome, descricao, preco, estoque
-        LivroDTO dto = new LivroDTO(null, "Java Completo", "Livro de Java", 50.0, 10);
-        LivroDTO salvo = new LivroDTO(1, "Java Completo", "Livro de Java", 50.0, 10);
+        // CORREÇÃO: O construtor agora exige todos os campos novos.
+        // Ordem: id, nome, descricao, preco, estoque, editoraId, anoPublicacao, autoresIds, categoriasIds
+        LivroDTO dto = new LivroDTO(
+                null,
+                "Java Completo",
+                "Livro de Java",
+                50.0,
+                10,
+                null,
+                2025,
+                new HashSet<>(),
+                new HashSet<>()
+        );
+
+        LivroDTO salvo = new LivroDTO(
+                1,
+                "Java Completo",
+                "Livro de Java",
+                50.0,
+                10,
+                null,
+                2025,
+                new HashSet<>(),
+                new HashSet<>()
+        );
 
         when(livroService.salvar(any())).thenReturn(salvo);
 
