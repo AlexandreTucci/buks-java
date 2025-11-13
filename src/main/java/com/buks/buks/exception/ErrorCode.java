@@ -22,6 +22,11 @@ public enum ErrorCode {
     // === Pedido ===
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER_NOT_FOUND", "Pedido não encontrado."),
 
+    // === Pagamento ===
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PAYMENT_NOT_FOUND", "Pagamento não encontrado."),
+    ORDER_ALREADY_PAID(HttpStatus.CONFLICT, "ORDER_ALREADY_PAID", "Este pedido já possui um pagamento realizado."),
+    PAYMENT_VALUE_MISMATCH(HttpStatus.BAD_REQUEST, "PAYMENT_VALUE_MISMATCH", "O valor do pagamento diverge do pedido (opcional implementar)."),
+
     // === Sistema ===
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Falha na validação dos dados enviados."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Ocorreu um erro inesperado.");

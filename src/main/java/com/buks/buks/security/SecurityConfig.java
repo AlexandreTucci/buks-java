@@ -22,39 +22,48 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        // 🔓 Rotas públicas (login/registro)
-                        .requestMatchers("/api/auth/**").permitAll()
+                                // 🔓 Rotas públicas (login/registro)
+                                .requestMatchers("/api/auth/**").permitAll()
 
-                        // 📚 LIVROS
-                        // GET pode ser feito por qualquer usuário autenticado
-                        .requestMatchers(HttpMethod.GET, "/api/livros/**").hasAnyRole("USER", "ADMIN")
-                        // POST, PUT e DELETE apenas ADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/livros/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/livros/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/livros/**").hasRole("ADMIN")
+                                // 📚 LIVROS
+                                // GET pode ser feito por qualquer usuário autenticado
+                                .requestMatchers(HttpMethod.GET, "/api/livros/**").hasAnyRole("USER", "ADMIN")
+                                // POST, PUT e DELETE apenas ADMIN
+                                .requestMatchers(HttpMethod.POST, "/api/livros/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/livros/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/livros/**").hasRole("ADMIN")
 
-                        // ⭐ AVALIAÇÕES
-                        // Usuário autenticado pode criar e listar
-                        .requestMatchers(HttpMethod.GET, "/api/avaliacoes/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/avaliacoes/**").hasAnyRole("USER", "ADMIN")
-                        // Apenas ADMIN pode deletar ou atualizar
-                        .requestMatchers(HttpMethod.PUT, "/api/avaliacoes/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/avaliacoes/**").hasRole("ADMIN")
+                                // ⭐ AVALIAÇÕES
+                                // Usuário autenticado pode criar e listar
+                                .requestMatchers(HttpMethod.GET, "/api/avaliacoes/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/avaliacoes/**").hasAnyRole("USER", "ADMIN")
+                                // Apenas ADMIN pode deletar ou atualizar
+                                .requestMatchers(HttpMethod.PUT, "/api/avaliacoes/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/avaliacoes/**").hasRole("ADMIN")
 
-                        // 🧾 PEDIDOS
-                        // Usuário autenticado pode listar e criar pedidos
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/pedidos/**").hasAnyRole("USER", "ADMIN")
-                        // Apenas ADMIN pode atualizar ou deletar
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**").hasRole("ADMIN")
+                                // 🧾 PEDIDOS
+                                // Usuário autenticado pode listar e criar pedidos
+                                .requestMatchers(HttpMethod.GET, "/api/pedidos/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/pedidos/**").hasAnyRole("USER", "ADMIN")
+                                // Apenas ADMIN pode atualizar ou deletar
+                                .requestMatchers(HttpMethod.PUT, "/api/pedidos/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**").hasRole("ADMIN")
 
-                        // 🔒 Outras rotas requerem autenticação
-                        .anyRequest().authenticated()
+                                // 💲 PAGAMENTOS
+                                // Usuário pode pagar e ver seus pagamentos
+                                .requestMatchers(HttpMethod.POST, "/api/pagamentos/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/pagamentos/**").hasAnyRole("USER", "ADMIN")
+                                // Apenas ADMIN altera ou deleta histórico de pagamento
+                                .requestMatchers(HttpMethod.PUT, "/api/pagamentos/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/pagamentos/**").hasRole("ADMIN")
+
+                                // 🔒 Outras rotas requerem autenticação
+                                .anyRequest().authenticated()
                 )
 
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
