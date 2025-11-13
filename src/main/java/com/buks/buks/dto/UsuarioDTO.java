@@ -2,6 +2,8 @@ package com.buks.buks.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 public class UsuarioDTO {
@@ -17,7 +19,7 @@ public class UsuarioDTO {
     @NotBlank
     private String senha;
 
-    @NotBlank
+    @NotNull
     private LocalDate dataNascimento;
 
     public UsuarioDTO() {}
