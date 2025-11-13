@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoriaDTO {
-    private Long id;
+    private Integer id; // Alterado de Long para Integer
 
     @NotBlank(message = "O nome da categoria é obrigatório")
     private String nome;

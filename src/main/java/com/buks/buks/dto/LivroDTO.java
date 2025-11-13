@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set; // Adicionado para a lista de IDs de relacionamento
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +27,13 @@ public class LivroDTO {
     private Double preco;
 
     private Integer estoque;
+
+    // Novos campos
+    private Integer editoraId;
+
+    private Integer anoPublicacao;
+
+    // Relacionamentos N:M
+    private Set<Long> autoresIds;
+    private Set<Integer> categoriasIds; // Usando Integer para consistência com o ID da Categoria
 }
