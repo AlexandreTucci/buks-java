@@ -30,7 +30,7 @@ public class CategoriaController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar categoria por ID")
-    public ResponseEntity<CategoriaDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<CategoriaDTO> buscarPorId(@PathVariable Integer id) { // Alterado de Long para Integer
         return ResponseEntity.ok(categoriaService.buscarPorId(id));
     }
 
@@ -44,15 +44,15 @@ public class CategoriaController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualizar categoria existente")
-    public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id,
-                                                 @Valid @RequestBody CategoriaDTO categoriaDTO) {
+    public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Integer id, // Alterado de Long para Integer
+                                                  @Valid @RequestBody CategoriaDTO categoriaDTO) {
         return ResponseEntity.ok(categoriaService.atualizar(id, categoriaDTO));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Excluir categoria")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+    public ResponseEntity<Void> excluir(@PathVariable Integer id) { // Alterado de Long para Integer
         categoriaService.excluir(id);
         return ResponseEntity.noContent().build();
     }

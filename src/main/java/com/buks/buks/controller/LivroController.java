@@ -33,12 +33,8 @@ public class LivroController {
             @ApiResponse(responseCode = "400", description = "Dados incorretos")
     })
     public ResponseEntity<LivroDTO> save(@Valid @RequestBody LivroDTO livroDTO) {
-        try {
-            LivroDTO salvo = livroService.salvar(livroDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INVALID_BOOK_DATA);
-        }
+        LivroDTO salvo = livroService.salvar(livroDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     @GetMapping

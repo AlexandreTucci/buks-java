@@ -28,7 +28,7 @@ public class CategoriaService {
     }
 
     @Transactional(readOnly = true)
-    public CategoriaDTO buscarPorId(Long id) {
+    public CategoriaDTO buscarPorId(Integer id) { // Alterado de Long para Integer
         return categoriaRepository.findById(id)
                 .map(this::toDTO)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -48,12 +48,12 @@ public class CategoriaService {
     }
 
     @Transactional
-    public CategoriaDTO atualizar(Long id, CategoriaDTO dto) {
+    public CategoriaDTO atualizar(Integer id, CategoriaDTO dto) { // Alterado de Long para Integer
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         if (!categoria.getNome().equals(dto.getNome()) &&
-            categoriaRepository.existsByNome(dto.getNome())) {
+                categoriaRepository.existsByNome(dto.getNome())) {
             throw new BusinessException(ErrorCode.CATEGORY_NAME_EXISTS);
         }
 
@@ -63,7 +63,7 @@ public class CategoriaService {
     }
 
     @Transactional
-    public void excluir(Long id) {
+    public void excluir(Integer id) { // Alterado de Long para Integer
         if (!categoriaRepository.existsById(id)) {
             throw new BusinessException(ErrorCode.CATEGORY_NOT_FOUND);
         }
