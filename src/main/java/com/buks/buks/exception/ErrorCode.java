@@ -31,6 +31,11 @@ public enum ErrorCode {
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Falha na validação dos dados enviados."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Ocorreu um erro inesperado."),
 
+    // === Autor e Editora ===
+    AUTHOR_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTHOR_NOT_FOUND", "Autor não encontrado."),
+    EDITORA_NOT_FOUND(HttpStatus.NOT_FOUND, "EDITORA_NOT_FOUND", "Editora não encontrada."),
+
+
     // === Categoria ===
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY_NOT_FOUND", "Categoria não encontrada."),
     CATEGORY_NAME_EXISTS(HttpStatus.CONFLICT, "CATEGORY_NAME_EXISTS", "Já existe uma categoria com esse nome."),
