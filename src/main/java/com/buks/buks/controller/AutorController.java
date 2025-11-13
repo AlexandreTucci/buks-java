@@ -26,10 +26,6 @@ public class AutorController {
 
     @PostMapping
     @Operation(summary = "Salvar um autor", description = "Cadastra um novo autor")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Autor salvo com sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
     public ResponseEntity<AutorDTO> save(@Valid @RequestBody AutorDTO autorDTO) {
         AutorDTO salvo = autorService.salvar(autorDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
@@ -43,10 +39,6 @@ public class AutorController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar autor por ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Autor encontrado com sucesso!"),
-            @ApiResponse(responseCode = "404", description = "Autor não encontrado.")
-    })
     public ResponseEntity<AutorDTO> findById(@PathVariable Long id) {
         AutorDTO autor = autorService.buscarPorId(id);
         return ResponseEntity.ok(autor);

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
+
 
 @Data
 @AllArgsConstructor
@@ -20,4 +22,7 @@ public class Autor {
     private String nome;
 
     private String nacionalidade;
+
+    @ManyToMany(mappedBy = "autores")
+    private List<Livro> livros;
 }
