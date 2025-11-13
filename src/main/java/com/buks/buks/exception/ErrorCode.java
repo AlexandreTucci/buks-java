@@ -29,7 +29,14 @@ public enum ErrorCode {
 
     // === Sistema ===
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Falha na validação dos dados enviados."),
-    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Ocorreu um erro inesperado.");
+    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Ocorreu um erro inesperado."),
+
+    // === Categoria ===
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY_NOT_FOUND", "Categoria não encontrada."),
+    CATEGORY_NAME_EXISTS(HttpStatus.CONFLICT, "CATEGORY_NAME_EXISTS", "Já existe uma categoria com esse nome."),
+    NO_CATEGORIES_FOUND(HttpStatus.NOT_FOUND, "NO_CATEGORIES_FOUND", "Nenhuma categoria encontrada."),
+    INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "INVALID_CATEGORY_DATA", "Os dados da categoria são inválidos.");
+
 
     private final HttpStatus status;
     private final String code;
