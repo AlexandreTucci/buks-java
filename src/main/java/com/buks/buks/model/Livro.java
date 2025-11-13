@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,5 +28,8 @@ public class Livro {
     private Double preco;
 
     @Column(nullable = false)
-    private Integer Estoque;
+    private Integer estoque; // corrigido: letra minúscula
+
+    @OneToMany(mappedBy = "livro")
+    private List<PedidoLivro> pedidos;
 }

@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,4 +30,8 @@ public class PedidoDTO {
 
     @NotNull(message = "A data do pedido é obrigatória.")
     private LocalDate dataPedido;
+
+    // NOVO: lista de livros do pedido
+    @NotNull(message = "A lista de itens é obrigatória.")
+    private List<PedidoLivroDTO> itens;
 }

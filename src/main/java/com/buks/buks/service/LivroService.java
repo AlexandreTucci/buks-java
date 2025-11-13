@@ -37,9 +37,12 @@ public class LivroService {
 
     public Optional<LivroDTO> atualizar(Integer id, LivroDTO dto) {
         return livroRepository.findById(id).map(existing -> {
-            Livro livro = toEntity(dto);
-            livro.setId(id);
-            Livro atualizado = livroRepository.save(livro);
+            // atualiza a entidade gerenciada (existing)
+            existing.setNome(dto.getNome());
+            existing.setDescricao(dto.getDescricao());
+            existing.setPreco(dto.getPreco());
+            existing.setEstoque(dto.getEstoque());
+            Livro atualizado = livroRepository.save(existing);
             return toDTO(atualizado);
         });
     }
@@ -54,22 +57,22 @@ public class LivroService {
 
     // --- Conversões DTO ↔ Entidade ---
     private Livro toEntity(LivroDTO dto) {
-        return new Livro(
-                dto.getId(),
-                dto.getNome(),
-                dto.getDescricao(),
-                dto.getPreco(),
-                dto.getEstoque()
-        );
+        Livro livro = new Livro();
+        livro.setId(dto.getId());
+        livro.setNome(dto.getNome());
+        livro.setDescricao(dto.getDescricao());
+        livro.setPreco(dto.getPreco());
+        livro.setEstoque(dto.getEstoque());
+        return livro;
     }
 
     private LivroDTO toDTO(Livro livro) {
-        return new LivroDTO(
-                livro.getId(),
-                livro.getNome(),
-                livro.getDescricao(),
-                livro.getPreco(),
-                livro.getEstoque()
-        );
+        LivroDTO dto = new LivroDTO();
+        dto.setId(livro.getId());
+        dto.setNome(livro.getNome());
+        dto.setDescricao(livro.getDescricao());
+        dto.setPreco(livro.getPreco());
+        dto.setEstoque(livro.getEstoque());
+        return dto;
     }
 }

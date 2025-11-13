@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,4 +33,7 @@ public class Pedido {
 
     @Column(name = "data_pedido", nullable = false)
     private LocalDate dataPedido;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoLivro> itens;  // Cada item contém: livro, quantidade, preço...
 }
