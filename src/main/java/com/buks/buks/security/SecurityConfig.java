@@ -69,6 +69,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/pagamentos/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/api/pagamentos/**").hasRole("ADMIN")
 
+                                //// 📚 EDITORAS
+                        //.requestMatchers(HttpMethod.GET, "/api/editoras/**").hasAnyRole("USER", "ADMIN")
+                        //.requestMatchers(HttpMethod.POST, "/api/editoras/**").hasRole("ADMIN")
+                        //.requestMatchers(HttpMethod.PUT, "/api/editoras/**").hasRole("ADMIN")
+                        //.requestMatchers(HttpMethod.DELETE, "/api/editoras/**").hasRole("ADMIN")
+
                                 // 🔒 Outras rotas requerem autenticação
                                 .anyRequest().authenticated()
                 )

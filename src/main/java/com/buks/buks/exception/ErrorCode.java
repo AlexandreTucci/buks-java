@@ -32,8 +32,20 @@ public enum ErrorCode {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Ocorreu um erro inesperado."),
 
     // === Autor e Editora ===
-    AUTHOR_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTHOR_NOT_FOUND", "Autor não encontrado."),
-    EDITORA_NOT_FOUND(HttpStatus.NOT_FOUND, "EDITORA_NOT_FOUND", "Editora não encontrada."),
+    EDITORA_NAO_ENCONTRADA(
+            HttpStatus.NOT_FOUND,
+            "EDITORA_NAO_ENCONTRADA",
+            "A editora informada não foi encontrada."
+    ),
+
+    EDITORA_JA_EXISTE(
+            HttpStatus.BAD_REQUEST,
+            "EDITORA_JA_EXISTE",
+            "Já existe uma editora cadastrada com esse nome."
+    ),
+
+    AUTOR_NAO_ENCONTRADO(HttpStatus.NOT_FOUND, "AUTOR_NAO_ENCONTRADO", "Autor não encontrado."),
+    AUTOR_JA_EXISTE(HttpStatus.BAD_REQUEST, "AUTOR_JA_EXISTE", "Já existe um autor cadastrado com esse CPF."),
 
 
     // === Categoria ===

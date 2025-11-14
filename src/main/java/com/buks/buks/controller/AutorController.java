@@ -1,13 +1,9 @@
+// src/main/java/com/buks/buks/controller/AutorController.java
 package com.buks.buks.controller;
 
 import com.buks.buks.dto.AutorDTO;
 import com.buks.buks.service.AutorService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,55 +11,33 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/autores")
-@Tag(name = "Autor", description = "APIs de gerenciamento de autores")
 public class AutorController {
-
-    private final AutorService autorService;
-
-    public AutorController(AutorService autorService) {
-        this.autorService = autorService;
-    }
+    private final AutorService service;
+    public AutorController(AutorService service) { this.service = service; }
 
     @PostMapping
-    @Operation(summary = "Salvar um autor", description = "Cadastra um novo autor")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Autor salvo com sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
-    public ResponseEntity<AutorDTO> save(@Valid @RequestBody AutorDTO autorDTO) {
-        AutorDTO salvo = autorService.salvar(autorDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
-    }
-
-    @GetMapping
-    @Operation(summary = "Listar todos os autores")
-    public List<AutorDTO> findAll() {
-        return autorService.listarTodos();
+    public ResponseEntity<AutorDTO> create(@Valid @RequestBody AutorDTO dto) {
+        return ResponseEntity.ok(service.create(dto));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar autor por ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Autor encontrado com sucesso!"),
-            @ApiResponse(responseCode = "404", description = "Autor não encontrado.")
-    })
-    public ResponseEntity<AutorDTO> findById(@PathVariable Long id) {
-        AutorDTO autor = autorService.buscarPorId(id);
-        return ResponseEntity.ok(autor);
+    public ResponseEntity<AutorDTO> get(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AutorDTO>> list() {
+        return ResponseEntity.ok(service.listAll());
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar um autor")
-    public ResponseEntity<AutorDTO> update(@PathVariable Long id,
-                                           @Valid @RequestBody AutorDTO autorDTO) {
-        AutorDTO atualizado = autorService.atualizar(id, autorDTO);
-        return ResponseEntity.ok(atualizado);
+    public ResponseEntity<AutorDTO> update(@PathVariable Long id, @Valid @RequestBody AutorDTO dto) {
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar um autor")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        autorService.deletar(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

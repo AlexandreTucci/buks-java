@@ -1,17 +1,13 @@
+// src/main/java/com/buks/buks/model/Autor.java
 package com.buks.buks.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.HashSet;
+import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "autores")
 public class Autor {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,4 +16,17 @@ public class Autor {
     private String nome;
 
     private String nacionalidade;
+
+    @ManyToMany(mappedBy = "autores")
+    private Set<Livro> livros = new HashSet<>();
+
+    // getters e setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getNacionalidade() { return nacionalidade; }
+    public void setNacionalidade(String nacionalidade) { this.nacionalidade = nacionalidade; }
+    public Set<Livro> getLivros() { return livros; }
+    public void setLivros(Set<Livro> livros) { this.livros = livros; }
 }

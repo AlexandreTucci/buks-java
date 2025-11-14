@@ -1,83 +1,68 @@
+// src/main/java/com/buks/buks/service/EditoraService.java
 package com.buks.buks.service;
 
 import com.buks.buks.dto.EditoraDTO;
-import com.buks.buks.exception.BusinessException;
-import com.buks.buks.exception.ErrorCode;
+import com.buks.buks.exception.ResourceNotFoundException;
 import com.buks.buks.model.Editora;
 import com.buks.buks.repository.EditoraRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class EditoraService {
-
     private final EditoraRepository editoraRepository;
 
     public EditoraService(EditoraRepository editoraRepository) {
         this.editoraRepository = editoraRepository;
     }
 
-    // CREATE
-    public EditoraDTO salvar(EditoraDTO dto) {
-        Editora editora = toEntity(dto);
-        Editora salvo = editoraRepository.save(editora);
-        return toDTO(salvo);
+    public EditoraDTO create(EditoraDTO dto) {
+        Editora e = dtoToEntity(dto);
+        e = editoraRepository.save(e);
+        return entityToDto(e);
     }
 
-    // READ
-    public List<EditoraDTO> listarTodas() {
-        return editoraRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    public EditoraDTO update(Long id, EditoraDTO dto) {
+        Editora e = editoraRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Editora não encontrada: " + id));
+        e.setNome(dto.getNome());
+        e.setPais(dto.getPais());
+        e = editoraRepository.save(e);
+        return entityToDto(e);
     }
 
-    public EditoraDTO buscarPorId(Long id) {
-        Editora editora = editoraRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.EDITORA_NOT_FOUND));
-        return toDTO(editora);
+    public EditoraDTO getById(Long id) {
+        return editoraRepository.findById(id)
+                .map(this::entityToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Editora não encontrada: " + id));
     }
 
-    // UPDATE
-    public EditoraDTO atualizar(Long id, EditoraDTO dto) {
-        Editora existente = editoraRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.EDITORA_NOT_FOUND));
-
-        existente.setNome(dto.getNome());
-        existente.setPais(dto.getPais());
-        existente.setSite(dto.getSite());
-
-        Editora atualizado = editoraRepository.save(existente);
-        return toDTO(atualizado);
+    public List<EditoraDTO> listAll() {
+        return editoraRepository.findAll().stream().map(this::entityToDto).collect(Collectors.toList());
     }
 
-    // DELETE
-    public void deletar(Long id) {
-        if (!editoraRepository.existsById(id)) {
-            throw new BusinessException(ErrorCode.EDITORA_NOT_FOUND);
-        }
+    public void delete(Long id) {
+        if (!editoraRepository.existsById(id)) throw new ResourceNotFoundException("Editora não encontrada: " + id);
         editoraRepository.deleteById(id);
     }
 
-    // ----------- DTO <-> ENTITY ------------
-
-    private Editora toEntity(EditoraDTO dto) {
-        return new Editora(
-                dto.getId(),
-                dto.getNome(),
-                dto.getPais(),
-                dto.getSite()
-        );
+    // mappers simples
+    private Editora dtoToEntity(EditoraDTO dto) {
+        Editora e = new Editora();
+        e.setNome(dto.getNome());
+        e.setPais(dto.getPais());
+        return e;
     }
 
-    private EditoraDTO toDTO(Editora editora) {
-        return new EditoraDTO(
-                editora.getId(),
-                editora.getNome(),
-                editora.getPais(),
-                editora.getSite()
-        );
+    private EditoraDTO entityToDto(Editora e) {
+        EditoraDTO dto = new EditoraDTO();
+        dto.setId(e.getId());
+        dto.setNome(e.getNome());
+        dto.setPais(e.getPais());
+        return dto;
     }
 }

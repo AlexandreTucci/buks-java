@@ -1,28 +1,39 @@
+// src/main/java/com/buks/buks/dto/LivroDTO.java
 package com.buks.buks.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class LivroDTO {
+    private Long id;
 
-    private Integer id;
+    @NotBlank(message = "Título é obrigatório")
+    private String titulo;
 
-    @NotBlank(message = "O nome do livro precisa ser preenchido.")
-    private String nome;
+    private String isbn;
 
-    @NotBlank(message = "A descrição precisa ser preenchida.")
-    private String descricao;
+    private Integer ano;
 
-    @NotNull(message = "O preço precisa ser informado.")
-    @Positive(message = "O preço deve ser maior que zero.")
-    private Double preco;
+    // id da editora (relacionamento simples)
+    private Long editoraId;
+    private String editoraNome;
 
-    private Integer estoque;
+    // ids dos autores
+    private Set<Long> autorIds;
+
+    // getters e setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public Integer getAno() { return ano; }
+    public void setAno(Integer ano) { this.ano = ano; }
+    public Long getEditoraId() { return editoraId; }
+    public void setEditoraId(Long editoraId) { this.editoraId = editoraId; }
+    public String getEditoraNome() { return editoraNome; }
+    public void setEditoraNome(String editoraNome) { this.editoraNome = editoraNome; }
+    public Set<Long> getAutorIds() { return autorIds; }
+    public void setAutorIds(Set<Long> autorIds) { this.autorIds = autorIds; }
 }
